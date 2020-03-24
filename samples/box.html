@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>box texture</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #loading .progress {
+        margin: 1.5em;
+        border: 1px solid white;
+        width: 50vw;
+      }
+      #loading .progressbar {
+        margin: 2px;
+        background: white;
+        height: 1em;
+        transform-origin: top left;
+        transform: scaleX(0);
+      }
+    </style>
+  </head>
+  <body>
+    <!--<div id="loading">-->
+    <!--<div class="progress"><div class="progressbar"></div></div>-->
+    <!--</div>-->
+    <script src="../three.min.js"></script>
+    <script src="../dat.gui.min.js"></script>
+    <script>
+      let scene, camera, renderer, box, boxGeometry, boxMaterial, gui, controls;
+      function init() {
+        scene = new THREE.Scene({ antialias: true });
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        camera = new THREE.PerspectiveCamera(
+          75,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          500
+        );
+        camera.position.z = 5;
+
+        //const loadManager = new THREE.LoadingManager();
+        //const loader = new THREE.TextureLoader(loadManager);
+        const loader = new THREE.TextureLoader();
+        const texture = loader.load(
+          "https://threejsfundamentals.org/threejs/resources/images/wall.jpg"
+        );
+
+        boxGeometry = new THREE.BoxBufferGeometry(2, 2, 2);
+        boxMaterial = new THREE.MeshBasicMaterial({ map: texture });
+        box = new THREE.Mesh(boxGeometry, boxMaterial);
+        scene.add(box);
+
+        class DegRadHelper {
+          constructor(obj, prop) {
+            this.obj = obj;
+            this.prop = prop;
+          }
+          get value() {
+            return THREE.MathUtils.radToDeg(this.obj[this.prop]);
+          }
+          set value(v) {
+            this.obj[this.prop] = THREE.MathUtils.degToRad(v);
+          }
+        }
+
+        class StringToNumberHelper {
+          constructor(obj, prop) {
+            this.obj = obj;
+            this.prop = prop;
+          }
+          get value() {
+            return this.obj[this.prop];
+          }
+          set value(v) {
+            this.obj[this.prop] = parseFloat(v);
+          }
+        }
+
+        const wrapModes = {
+          ClampToEdgeWrapping: THREE.ClampToEdgeWrapping,
+          RepeatWrapping: THREE.RepeatWrapping,
+          MirroredRepeatWrapping: THREE.MirroredRepeatWrapping
+        };
+
+        function updadeTexture() {
+          texture.needsUpdate = true;
+        }
+
+        gui = new dat.GUI();
+        gui
+          .add(new StringToNumberHelper(texture, "wrapS"), "value", wrapModes)
+          .name("texture.wrapS")
+          .onChange(updadeTexture);
+        gui
+          .add(new StringToNumberHelper(texture, "wrapT"), "value", wrapModes)
+          .name("texture.wrapT")
+          .onChange(updadeTexture);
+        gui.add(texture.repeat, "x", 0, 5, 0.01).name("texture.repeat.x");
+        gui.add(texture.repeat, "y", 0, 5, 0.01).name("texture.repeat.y");
+        gui.add(texture.offset, "x", -2, 2, 0.01).name("texture.offset.x");
+        gui.add(texture.offset, "y", -2, 2, 0.01).name("texture.offset.y");
+        gui.add(texture.center, "x", -0.5, 1.5, 0.01).name("texture.center.x");
+        gui.add(texture.center, "y", -0.5, 1.5, 0.01).name("texture.center.y");
+        gui
+          .add(new DegRadHelper(texture, "rotation"), "value", -360, 360)
+          .name("texture.rotation");
+
+        animate();
+        //const materials = [
+        //  new THREE.MeshBasicMaterial({
+        //    map: loader.load(
+        //      "https://threejsfundamentals.org/threejs/resources/images/flower-1.jpg"
+        //    )
+        //  }),
+        //  new THREE.MeshBasicMaterial({
+        //    map: loader.load(
+        //      "https://threejsfundamentals.org/threejs/resources/images/flower-2.jpg"
+        //    )
+        //  }),
+        //  new THREE.MeshBasicMaterial({
+        //    map: loader.load(
+        //      "https://threejsfundamentals.org/threejs/resources/images/flower-3.jpg"
+        //    )
+        //  }),
+        //  new THREE.MeshBasicMaterial({
+        //    map: loader.load(
+        //      "https://threejsfundamentals.org/threejs/resources/images/flower-4.jpg"
+        //    )
+        //  }),
+        //  new THREE.MeshBasicMaterial({
+        //    map: loader.load(
+        //      "https://threejsfundamentals.org/threejs/resources/images/flower-5.jpg"
+        //    )
+        //  }),
+        //  new THREE.MeshBasicMaterial({
+        //    map: loader.load(
+        //      "https://threejsfundamentals.org/threejs/resources/images/flower-6.jpg"
+        //    )
+        //  })
+        //];
+
+        //const loadingElem = document.querySelector("#loading");
+        //const progressBarElem = loadingElem.querySelector(".progressbar");
+
+        //loadManager.onLoad = item => {
+        //  loadingElem.style.display = "none";
+        //  box = new THREE.Mesh(boxGeometry, materials);
+        //  scene.add(box);
+        //  animate();
+        //};
+
+        //loadManager.onProgress = (
+        //  urlOfLastItemLoaded,
+        //  itemsLoaded,
+        //  itemsTotal
+        //) => {
+        //  const progress = itemsLoaded / itemsTotal;
+        //  console.log(progress);
+        //  progressBarElem.style.transform = `scaleX(${progress})`;
+        //};
+      }
+
+      function animate(time) {
+        box.rotation.x += 0.012;
+        box.rotation.y += 0.012;
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+
+      init();
+    </script>
+  </body>
+</html>

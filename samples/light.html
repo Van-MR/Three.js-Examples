@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>THREE OF Light</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <style>
+      #canvas-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas-frame"></div>
+  </body>
+  <script>
+    var renderer, camera, scene, geometry, materia, mesh
+
+    function initRenderer() {
+      renderer = new THREE.WebGLRenderer({ antialias: true })
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      document.body.appendChild(renderer.domElement)
+      renderer.setClearColor(0xffffff, 1.0)
+    }
+
+    function initCamera() {
+      camera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        1,
+        10000
+      )
+      camera.position.set(600, 0, 600)
+      camera.up.x = 0
+      camera.up.y = 1
+      camera.up.z = 0
+      camera.lookAt(0, 0, 0)
+    }
+
+    function initScene() {
+      scene = new THREE.Scene()
+    }
+
+    function initLight() {
+        var light = new THREE.AmbientLight(0xFF0000)
+        light.position.set(100,100,200)
+        scene.add(light)
+    }
+
+    function initObject() {
+      geometry = new THREE.CubeGeometry(20, 100, 50, 4, 4)
+      materia = new THREE.MeshLambertMaterial({ color: 0x880000 })
+      mesh = new THREE.Mesh(geometry, materia)
+      mesh.position = new THREE.Vector3(0, 0, 0)
+      scene.add(mesh)
+    }
+
+    function init() {
+        initRenderer()
+        initCamera()
+        initScene()
+        initLight()
+        initObject()
+        renderer.clear()
+        renderer.render(scene,camera)
+    }
+
+    init()
+  </script>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>My first three.js app</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+    <script src="../three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+    <script src="../dat.gui.min.js"></script>
+    <script src="../OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      let scene,
+        camera,
+        renderer,
+        planeGeometry,
+        planeMaterial,
+        plane,
+        cubeGeoMetry,
+        cubeMaterial,
+        cube,
+        torusGeometry,
+        torusMaterial,
+        torus,
+        textGeometry,
+        textMaterial,
+        text,
+        axis,
+        controls,
+        datGUI,
+        guiControls,
+        stats,
+        SCREEN_WIDTH,
+        SCREN_HEIGHT;
+
+      function init() {
+        scene = new THREE.Scene();
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor("#ececec"); //设置背景的颜色
+        renderer.shadowMap.enabled = true; //设置是否开启投影,开启的话,关照会产生投影
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; //设置投影类型, 柔和投影
+        document.body.appendChild(renderer.domElement);
+
+        stats = new Stats();
+        stats.domElement.style.position = "absolute";
+        stats.domElement.style.top = "0px";
+        stats.domElement.style.left = "0px";
+        document.body.appendChild(stats.domElement);
+
+        camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          1,
+          500
+        );
+        camera.position.set(70, 40, 50);
+        camera.lookAt(0, 0, 0);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.addEventListener("change", renderer);
+
+        //axis
+        axis = new THREE.AxesHelper(15);
+        scene.add(axis);
+
+        //grid
+        //var color = new THREE.Color("teal");
+        var grid = new THREE.GridHelper(50, 25);
+
+        scene.add(grid);
+
+        //plane
+        var planeGeometry = new THREE.PlaneGeometry(30, 30, 30);
+        var planeMaterial = new THREE.MeshLambertMaterial({
+          color: 0xffffff,
+          side: THREE.DoubleSide
+        });
+        var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.receiveShadow = true;
+        plane.rotation.x = 0.5 * Math.PI;
+
+        scene.add(plane);
+
+        plane.rotation.x = 0.5 * Math.PI;
+        plane.receiveShadow = true;
+
+        scene.add(plane);
+
+        //cube
+        cubeGeoMetry = new THREE.BoxGeometry(5, 5, 5);
+        cubeMaterial = new THREE.MeshLambertMaterial({ color: "red" });
+        cube = new THREE.Mesh(cubeGeoMetry, cubeMaterial);
+
+        cube.position.set(2.5, 2.5, 2.5);
+        scene.add(cube);
+
+        //text
+        //textGeometry = new THREE.TextGeometry("hello world");
+        //textMaterial = new THREE.MeshPhongMaterial({ color: "green" });
+        //text = new THREE.Mesh(textGeometry, textMaterial);
+        //scene.add(text);
+
+        //torus
+        torusGeometry = new THREE.TorusKnotBufferGeometry(1, 3, 10, 16);
+        torusMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        torus = new THREE.Mesh(torusGeometry, torusMaterial);
+        torus.position.set(20, 0, 0);
+        scene.add(torus);
+
+        // spot light
+        var spotLight = new THREE.SpotLight("#ececec", 0.9);
+        spotLight.position.set(100, 1000, 100);
+        spotLight.castShadow = true;
+
+        spotLight.shadow.mapSize.width = 1024;
+        spotLight.shadow.mapSize.height = 1024;
+
+        spotLight.shadow.camera.near = 500;
+        spotLight.shadow.camera.far = 4000;
+        spotLight.shadow.camera.fov = 30;
+
+        scene.add(spotLight);
+
+        //dat.gui  inittial property value
+        guiControls = new (function() {
+          this.rotationX = 0.0;
+          this.rotationY = 0.0;
+          this.rotationZ = 0.0;
+        })();
+
+        datGUI = new dat.GUI();
+        //setting range  min and max value
+        datGUI.add(guiControls, "rotationX", 0, 1);
+        datGUI.add(guiControls, "rotationY", 0, 1);
+        datGUI.add(guiControls, "rotationZ", 0, 1);
+
+        animate();
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += guiControls.rotationX;
+        cube.rotation.y += guiControls.rotationY;
+        cube.rotation.z += guiControls.rotationZ;
+        stats.update();
+        renderer.render(scene, camera);
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      init();
+      window.addEventListener("resize", onWindowResize, false);
+    </script>
+  </body>
+</html>

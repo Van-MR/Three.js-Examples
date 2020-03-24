@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Poitn</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      #c {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <script src="../three.min.js"></script>
+    <script>
+      function main() {
+        const canvas = document.querySelector("#c");
+        const renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          canvas
+        });
+
+        const fov = 75;
+        const aspect = 2;
+        const near = 0.1;
+        const far = 1000;
+        const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+        camera.position.z = 50;
+
+        const scene = new THREE.Scene();
+
+        let points = [];
+        points.push(new THREE.Vector3(10, 0, 0));
+        points.push(new THREE.Vector3(-10, 0, 0));
+        points.push(new THREE.Vector3(0, 10, 0));
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+        const material = new THREE.LineBasicMaterial({
+          color: "red"
+        });
+
+        const line = new THREE.Line(geometry, material);
+
+        scene.add(line);
+
+        renderer.render(scene, camera);
+      }
+
+      main();
+    </script>
+  </body>
+</html>

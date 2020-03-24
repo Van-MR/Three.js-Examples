@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>text geometry</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+    <script src="../three.min.js"></script>
+  </head>
+  <body>
+    <script>
+      var scene, camera, renderer, geometry, material, text;
+      function init() {
+        //create scene
+        scene = new THREE.Scene();
+
+        //create renderer
+        renderer = new THREE.WebGLRenderer({
+          antialias: true
+        });
+        renderer.setClearColor("#000");
+        //renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        //create camera
+        camera = new THREE.PerspectiveCamera(
+          45,
+          window.innerWidth / window.innerHeight,
+          1,
+          1000
+        );
+
+        //set camear position
+        camera.position.set(0, 0, 500);
+
+        //create loader
+        var loader = new THREE.FontLoader();
+        loader.load("../fonts/gentilis_regular.typeface.json", function(font) {
+          let material1 = new THREE.MeshBasicMaterial({ color: "green" });
+          geometry1 = new THREE.TextGeometry("three.js is awesome !", {
+            font: font,
+            size: 30,
+            height: 5
+          });
+          //create text
+          text = new THREE.Mesh(geometry1, material1);
+          text.position.set(-150, 0, 0);
+          scene.add(text);
+
+          renderer.render(scene, camera);
+        });
+      }
+
+      //listen window resize
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      init();
+      window.addEventListener("resize", onWindowResize, false);
+    </script>
+  </body>
+</html>

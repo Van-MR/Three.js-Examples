@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Model</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+    <script src="three.min.js"></script>
+    <script src="GLTFLoader.js"></script>
+    <script src="OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      let scene, camera, renderer, sceneLight;
+
+      function init() {
+        //场景
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xdddddd);
+
+        //渲染器
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        //相机
+        const fov = 75;
+        const near = 1;
+        const far = 5000;
+        camera = new THREE.PerspectiveCamera(
+          fov,
+          window.innerWidth / window.innerHeight,
+          near,
+          far
+        );
+        camera.rotation.y = (45 / 180) * Math.PI;
+        camera.position.x = 200;
+        camera.position.y = 100;
+        camera.position.z = 100;
+
+        //轨道控制
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.addEventListener("change", renderer);
+        //controls.minDistance = 500;
+        //controls.maxDistance = 1500;
+        //controls.dampingFactor = 0.25; // friction
+        //controls.rotateSpeed = 0.5; // mouse sensitivity
+
+        //环境光
+        hlight = new THREE.AmbientLight(0x404040, 100);
+        scene.add(hlight);
+
+        directionLight = new THREE.DirectionalLight(0xffffff, 100);
+        directionLight.position.set(0, 1, 0);
+        directionLight.castShadow = true;
+        //scene.add(directionLight);
+
+        light1 = new THREE.PointLight(0xc4c4c4, 10);
+        light1.position.set(0, 300, 500);
+        //scene.add(light1);
+
+        light2 = new THREE.PointLight(0xc4c4c4, 10);
+        light2.position.set(500, 100, 0);
+        //scene.add(light2);
+
+        light3 = new THREE.PointLight(0xc4c4c4, 10);
+        light3.position.set(0, 100, -500);
+        //scene.add(light3);
+
+        light4 = new THREE.PointLight(0xc4c4c4, 10);
+        light4.position.set(-500, 300, 0);
+        //scene.add(light4);
+
+        let loader = new THREE.GLTFLoader();
+        loader.load("scene.gltf", function(gltf) {
+          car = gltf.scene.children[0];
+          car.scale.set(0.5, 0.5, 0.5);
+          scene.add(gltf.scene);
+          animate();
+        });
+      }
+
+      init();
+
+      function animate() {
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.render(scene, camera);
+      }
+      window.addEventListener("resize", onWindowResize, false);
+    </script>
+  </body>
+</html>

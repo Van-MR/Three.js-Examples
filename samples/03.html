@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>ThreeJS 框架</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <style>
+      #canvas-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas-frame"></div>
+    <script>
+      var camera, scene, renderer
+      var geometry, material, mesh
+
+      /**
+       * @description 初始化渲染场景
+       */
+      function initRenderer() {
+        renderer = new THREE.WebGLRenderer({ antialias: true })
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        document.body.appendChild(renderer.domElement)
+      }
+      /**
+       * @description 初始化相机
+       */
+      function initCamera() {
+        camera = new THREE.PerspectiveCamera(
+          70,
+          window.innerWidth / window.innerHeight,
+          0.01,
+          10
+        )
+        camera.position.z = 1
+        camera.lookat = {
+          x: 0,
+          y: 0,
+          z: 0
+        }
+      }
+      /**
+       * @description 初始化场景
+       */
+      function initScene() {
+        scene = new THREE.Scene()
+      }
+      /**
+       * @description 初始化添加物体
+       */
+      function initObject() {
+        geometry = new THREE.BoxGeometry(0.3, 0.3, 0.1)
+        material = new THREE.MeshNormalMaterial()
+        mesh = new THREE.Mesh(geometry, material)
+        scene.add(mesh)
+      }
+      /**
+       * @description 渲染
+       */
+      function render() {
+        animate()
+      }
+      function init() {
+        initRenderer()
+        initCamera()
+        initScene()
+        initObject()
+        render()
+      }
+
+      function animate() {
+        requestAnimationFrame(animate)
+        mesh.rotation.x += 0.01
+        mesh.rotation.y += 0.02
+        renderer.render(scene, camera)
+      }
+      init()
+    </script>
+  </body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>THREE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/r16/Stats.min.js"></script>
+    <style>
+      #canvas-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas-frame"></div>
+  </body>
+  <script>
+    var renderer, scene, camera, geometry, material, mesh
+
+    function initRenderer() {
+      renderer = new THREE.WebGLRenderer({ antialias: true })
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      document.body.appendChild(renderer.domElement)
+      renderer.setClearColor(0xffffff, 1.0)
+
+      //动画性能监测
+      stats = new Stats()
+      stats.domElement.style.position = 'absolute'
+      stats.domElement.style.left = '0px'
+      stats.domElement.style.top = '0px'
+      document.getElementById('canvas-frame').appendChild(stats.domElement)
+    }
+
+    function initCamera() {
+      camera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        1,
+        10000
+      )
+      camera.position.set(0, 0, 600)
+      camera.up.x = 0
+      camera.up.y = 1
+      camera.up.z = 0
+      camera.lookAt(0, 0, 0)
+    }
+
+    function initScene() {
+      scene = new THREE.Scene()
+    }
+
+    function initLight() {
+      var light1 = new THREE.AmbientLight(0xffffff)
+      light1.position.set(100, 100, 200)
+      scene.add(light1)
+      var light2 = new THREE.PointLight(0x00ff00)
+      light2.position.set(0, 0, 300)
+      scene.add(light2)
+    }
+
+    function initObject() {
+      //geometry = new THREE.CylinderGeometry(100,150,400)
+      geometry = new THREE.BoxGeometry(150, 100, 100)
+      material = new THREE.MeshBasicMaterial({ color: 0xffff00 })
+      mesh = new THREE.Mesh(geometry, material)
+      mesh.position = new THREE.Vector3(0, 0, 0)
+      scene.add(mesh)
+    }
+
+    function animation() {
+      //camera.position.x+=0.5;
+      mesh.position.x -= 1
+      renderer.render(scene, camera)
+      requestAnimationFrame(animation)
+      stats.update()
+    }
+
+    function init() {
+      initRenderer()
+      initCamera()
+      initScene()
+      initLight()
+      initObject()
+      animation()
+    }
+
+    init()
+  </script>
+</html>
